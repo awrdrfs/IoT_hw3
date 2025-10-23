@@ -1,0 +1,131 @@
+Conversation log - Spam analysis project
+Date: 2025-10-23
+
+Summary:
+- Filled out openspec/project.md with project purpose, tech stack, conventions.
+- Created OpenSpec change proposal: changes/add-rich-preprocessing-and-streamlit-views (proposal.md, tasks.md, specs/spam-analysis/spec.md).
+- Implemented minimal pipeline: data/load_data.py, features/vectorize.py, viz/plot.py, models/train.py, app/streamlit_app.py, scripts/run_pipeline.py.
+- Added requirements.txt, README.md, tests/test_data.py and package __init__.py files for imports.
+- Created and activated virtualenv (.venv) and installed dependencies; ran pytest (1 passed).
+- Fixed import path issues for Streamlit and runner by inserting project root into sys.path in app/streamlit_app.py and scripts/run_pipeline.py.
+- Launched Streamlit server and confirmed it's reachable at http://localhost:8501.
+- Simulated Streamlit "Run preprocessing & train baseline" using scripts/run_pipeline.py which produced artifacts: features/vectorizer.pkl, models/baseline.joblib, viz/out/* and showed metrics.
+- Enhanced Streamlit app to show Confusion Matrix and ROC curve after training.
+
+Key commands run during session (local):
+- python3 -m venv .venv
+- source .venv/bin/activate
+- pip install -r requirements.txt
+- .venv/bin/pytest -q
+- .venv/bin/streamlit run app/streamlit_app.py
+- .venv/bin/python scripts/run_pipeline.py
+
+Files created/edited:
+- openspec/project.md
+- openspec/changes/add-rich-preprocessing-and-streamlit-views/{proposal.md,tasks.md,specs/spam-analysis/spec.md}
+- data/load_data.py
+- features/vectorize.py
+- viz/plot.py
+- models/train.py
+- app/streamlit_app.py
+- scripts/run_pipeline.py
+- requirements.txt
+- README.md
+- tests/test_data.py
+Conversation log - Spam analysis project
+Date: 2025-10-23
+
+Summary:
+- Filled out openspec/project.md with project purpose, tech stack, conventions.
+- Created OpenSpec change proposal: changes/add-rich-preprocessing-and-streamlit-views (proposal.md, tasks.md, specs/spam-analysis/spec.md).
+- Implemented minimal pipeline: data/load_data.py, features/vectorize.py, viz/plot.py, models/train.py, app/streamlit_app.py, scripts/run_pipeline.py.
+- Added requirements.txt, README.md, tests/test_data.py and package __init__.py files for imports.
+- Created and activated virtualenv (.venv) and installed dependencies; ran pytest (1 passed).
+- Fixed import path issues for Streamlit and runner by inserting project root into sys.path in app/streamlit_app.py and scripts/run_pipeline.py.
+- Launched Streamlit server and confirmed it's reachable at http://localhost:8501.
+- Simulated Streamlit "Run preprocessing & train baseline" using scripts/run_pipeline.py which produced artifacts: features/vectorizer.pkl, models/baseline.joblib, viz/out/* and showed metrics.
+- Enhanced Streamlit app to show Confusion Matrix and ROC curve after training.
+
+Key commands run during session (local):
+- python3 -m venv .venv
+- source .venv/bin/activate
+- pip install -r requirements.txt
+- .venv/bin/pytest -q
+- .venv/bin/streamlit run app/streamlit_app.py
+- .venv/bin/python scripts/run_pipeline.py
+
+Files created/edited:
+- openspec/project.md
+- openspec/changes/add-rich-preprocessing-and-streamlit-views/{proposal.md,tasks.md,specs/spam-analysis/spec.md}
+- data/load_data.py
+- features/vectorize.py
+- viz/plot.py
+- models/train.py
+- app/streamlit_app.py
+- scripts/run_pipeline.py
+- requirements.txt
+- README.md
+- tests/test_data.py
+- tests/conftest.py
+- __init__.py for packages: data, features, viz, models, app
+
+Notes / Next steps:
+- Consider consolidating artifact paths under artifacts/ or outputs/.
+- Add more tests around preprocessing and vectorizer behavior.
+- Optionally create a PR with the changes and add CI to run pytest and openspec validation.
+
+2025-10-22 Conversation
+----------------------
+Note: The full raw transcript for 2025-10-22 was not provided in this workspace. If you want the exact conversation text added here, please paste it or upload the transcript file and I will replace this placeholder with the verbatim content.
+
+Summary placeholder for 2025-10-22:
+- Brief interactions and planning prior to work on 10/23. (No verbatim transcript available.)
+
+Recent updates (2025-10-23): UI & prediction improvements
+- Added Predict single message UI to Streamlit and implemented artifact loading (vectorizer + model) for live predictions.
+- Added example templates dropdown to prefill the input area for quick testing.
+- Implemented colorized prediction card: red for SPAM, green for NOT SPAM.
+- Added a 0-100% progress bar to display spam probability visually.
+
+Recent debug & modelling updates (2025-10-23): recall-model improvements
+- Encountered a Streamlit ImportError / TypeError while loading updated training code: `train_recall_focused_model` signature mismatch (old process lacked `target_accuracy` argument).
+- Fixed `models/train.py` to expand hyperparameter search and add `target_accuracy` parameter and success flag; added diagnostic prints for candidate metrics.
+- Updated `scripts/run_pipeline.py` and `app/streamlit_app.py` to call the new signature and pass baseline metrics when training recall-only from the UI.
+- Restarted Streamlit and validated new behavior. Ran the pipeline: several candidates evaluated; found candidates that satisfy recall > baseline and accuracy >= 0.9. The chosen recall-model example metrics (validation): accuracy 0.9843, precision 0.9483, recall 0.9322, f1 0.9402 (threshold 0.37). Model saved as `models/recall_model.joblib` and vectorizer as `features/vectorizer_recall.pkl`.
+
+End of additional updates
+
+End of log
+
+2025-10-23 Training run: recall-model re-training
+-----------------------------------------------
+- Command: python3 scripts/run_pipeline.py
+- Dataset: sms_spam_no_header.csv (5574 rows)
+- Baseline (test) metrics:
+  - accuracy: 0.9713004484304932
+  - precision: 0.9849624060150376
+  - recall: 0.8136645962732919
+  - f1: 0.891156462585034
+- Recall-focused training summary:
+  - Multiple candidate classifiers evaluated (LogisticRegression, RandomForest) with several class_weight and hyperparameter settings.
+  - Several candidates met the acceptance criteria (Accuracy>=0.90, Precision>=0.90, Recall>=0.82). Example satisfying candidates printed during training included:
+    - LogisticRegression (C=1.0, class_weight=None) | threshold=0.29 | accuracy=0.9753363 | precision=0.9363636 | recall=0.87288136
+    - LogisticRegression (C=10.0, class_weight=None) | threshold=0.26 | accuracy=0.98318386 | precision=0.94017094 | recall=0.93220339
+    - RandomForest variants (balanced/class_weight scaling) also produced several satisfying candidates.
+  - Final selected recall-model (validation metrics):
+    - accuracy: 0.984304932735426
+    - precision: 0.9482758620689655
+    - recall: 0.9322033898305084
+    - f1: 0.94017094017094
+    - selected decision threshold: 0.37
+    - success: True
+- Artifacts saved:
+  - features/vectorizer.pkl (baseline vectorizer)
+  - features/vectorizer_recall.pkl (recall vectorizer)
+  - models/baseline.joblib
+  - models/recall_model.joblib
+  - viz/out/confusion.png
+
+Notes:
+- The recall-model meets the requested acceptance thresholds (Accuracy>=90%, Precision>=90%, Recall>=82%).
+- If you want metadata persisted with the model (params + selected threshold + validation metrics), I can save a small JSON next to /Users/bradpan/Desktop/物聯網數據分析與應用/hw3/models/recall_model.joblib (e.g. models/recall_model.metadata.json).
