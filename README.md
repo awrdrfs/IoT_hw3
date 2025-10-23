@@ -28,3 +28,5 @@ Notes
 
 - The Streamlit app uses relative paths that assume you run Streamlit from the repository root or adjust the data path in the sidebar.
 - Files created by the app (vectorizer, model) are saved under `../features/` and `../models/` relative to the app file; adjust paths as needed for your environment.
+
+## 註：對話流程在 conversation_log
